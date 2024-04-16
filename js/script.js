@@ -6,54 +6,57 @@ function addStudentInfo() {
     studentInfo.textContent = `Student ID: ${studentId} | Name: ${studentName}`;
 }
 
-// Function to fetch song information from musixmatch API
-async function fetchSongInfo(songName) {
-    const apiKey = 'c6acec269965e8d60084e57553139bfd'; //API key
-    const apiUrl = `https://developer.musixmatch.com/documentation/api-reference/track-search?q=${songName}&apikey=${apiKey}`;
+// Function to fetch artist information from Spotify API through RapidAPI
+async function fetchArtistInfo(artistId) {
+    const url = `https://spotify23.p.rapidapi.com/artists/?ids=${artistId}`;
+    const options = {
+        method: 'GET',
+        headers: {
+            'X-RapidAPI-Key': '25b0304e3fmsh988ba37dab514bcp1da427jsn28284700bbf5',
+            'X-RapidAPI-Host': 'spotify23.p.rapidapi.com'
+        }
+    };
 
     try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(url, options);
         const data = await response.json();
+        console.log(data);
 
         // Check if data is available
-        if (data.message.header.status_code === 200) {
-            const track = data.message.body.track_list[0].track;
-            const songTitle = track.track_name;
-            const artistName = track.artist_name;
-            const albumName = track.album_name;
-            const releaseDate = track.updated_time;
-            const trackRating = track.track_rating;
-            const albumArtworkUrl = track.album_coverart_100x100; // URL of album artwork image
+        if (data.artists) {
+            const artist = data.artists[0];
+            const artistName = artist.name;
+            const genres = artist.genres.join(', ');
+            const popularity = artist.popularity;
+            const imageUrl = artist.images.length > 0 ? artist.images[0].url : '';
 
-            // Display song information and album artwork on the page
-            const songInfoElement = document.createElement('div');
-            songInfoElement.innerHTML = `
-                <h2>${songTitle}</h2>
-                <p>Artist: ${artistName}</p>
-                <p>Album: ${albumName}</p>
-                <p>Release Date: ${releaseDate}</p>
-                <p>Track Rating: ${trackRating}</p>
-                <img src="${albumArtworkUrl}" alt="Album Artwork">
+            // Display artist information on the page
+            const artistInfoElement = document.createElement('div');
+            artistInfoElement.innerHTML = `
+                <h2>${artistName}</h2>
+                <p>Genres: ${genres}</p>
+                <p>Popularity: ${popularity}</p>
+                <img src="${imageUrl}" alt="${artistName} Image">
             `;
-            document.getElementById('song-info-container').appendChild(songInfoElement);
+            document.getElementById('artist-info-container').appendChild(artistInfoElement);
         } else {
-            console.log('Error fetching data:', data.message.header.status_code);
+            console.log('Error fetching data:', data);
         }
     } catch (error) {
         console.error('Error fetching data:', error);
     }
 }
 
-// Function to search for a song
-function searchSong() {
+// Function to search for an artist
+function searchArtist() {
     const searchInput = document.getElementById('search-input');
-    const songName = searchInput.value.trim();
+    const artistId = searchInput.value.trim();
     
-    if (songName !== '') {
-        fetchSongInfo(songName);
+    if (artistId !== '') {
+        fetchArtistInfo(artistId);
         searchInput.value = ''; // Clear the search input after searching
     } else {
-        alert('Please enter a song name.');
+        alert('Please enter an artist ID.');
     }
 }
 
