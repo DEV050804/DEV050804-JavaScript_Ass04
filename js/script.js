@@ -9,7 +9,7 @@ function addStudentInfo() {
 // Function to fetch song information from musixmatch API
 async function fetchSongInfo(songName) {
     const apiKey = 'c6acec269965e8d60084e57553139bfd'; //API key
-    const apiUrl = `https://api.musixmatch.com/ws/1.1/track.search?q=${songName}&apikey=${apiKey}`;
+    const apiUrl = `https://developer.musixmatch.com/documentation/api-reference/track-search?q=${songName}&apikey=${apiKey}`;
 
     try {
         const response = await fetch(apiUrl);
